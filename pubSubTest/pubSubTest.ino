@@ -1,93 +1,95 @@
-#include <AWS_IOT.h>
-#include <WiFi.h>
+#include "config.h"
 
-AWS_IOT hornbill;
+#include <WiFiClientSecure.h>
+#include <MQTTClient.h> //MQTT Library Source: https://github.com/256dpi/arduino-mqtt
 
-char WIFI_SSID[]="your Wifi SSID";
-char WIFI_PASSWORD[]="Wifi Password";
-char HOST_ADDRESS[]="AWS host address";
-char CLIENT_ID[]= "client id";
-char TOPIC_NAME[]= "your thing/topic name";
+#include <ArduinoJson.h> //ArduinoJson Library Source: https://github.com/bblanchon/ArduinoJson
+#include "WiFi.h"
 
+// MQTT topics for the device
+#define AWS_IOT_PUBLISH_TOPIC   "$aws/things/taau_1/shadow/update"
+#define AWS_IOT_SUBSCRIBE_TOPIC "$aws/things/taau_1/shadow/update/delta"
 
-int status = WL_IDLE_STATUS;
-int tick=0,msgCount=0,msgReceived = 0;
-char payload[512];
-char rcvdPayload[512];
+WiFiClientSecure wifi_client = WiFiClientSecure();
+MQTTClient mqtt_client = MQTTClient(256); //256 indicates the maximum size for packets being published and received.
 
-void mySubCallBackHandler (char *topicName, int payloadLen, char *payLoad)
+uint32_t t1;
+
+void connectAWS()
 {
-    strncpy(rcvdPayload,payLoad,payloadLen);
-    rcvdPayload[payloadLen] = 0;
-    msgReceived = 1;
+  //Begin WiFi in station mode`
+  WiFi.mode(WIFI_STA); 
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  Serial.println("Connecting to Wi-Fi");
+
+  //Wait for WiFi connection
+  while (WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  // Configure wifi_client with the correct certificates and keys
+  wifi_client.setCACert(AWS_CERT_CA);
+  wifi_client.setCertificate(AWS_CERT_CRT);
+  wifi_client.setPrivateKey(AWS_CERT_PRIVATE);
+
+  //Connect to AWS IOT Broker. 8883 is the port used for MQTT
+  mqtt_client.begin(AWS_IOT_ENDPOINT, 8883, wifi_client);
+
+  //Set action to be taken on incoming messages
+  mqtt_client.onMessage(incomingMessageHandler);
+
+  Serial.print("Connecting to AWS IOT");
+
+  //Wait for connection to AWS IoT
+  while (!mqtt_client.connect(THINGNAME)) {
+    Serial.print(".");
+    delay(100);
+  }
+  Serial.println();
+
+  if(!mqtt_client.connected()){
+    Serial.println("AWS IoT Timeout!");
+    return;
+  }
+
+  //Subscribe to a topic
+  mqtt_client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
+
+  Serial.println("AWS IoT Connected!");
 }
 
+void publishMessage()
+{
+  //Create a JSON document of size 200 bytes, and populate it
+  //See https://arduinojson.org/
+  StaticJsonDocument<200> doc;
+  doc["elapsed_time"] = millis() - t1;
+  doc["value"] = random(1000);
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer); // print to mqtt_client
 
+  //Publish to the topic
+  mqtt_client.publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+  Serial.println("Sent a message");
+}
+
+void incomingMessageHandler(String &topic, String &payload) {
+  Serial.println("Message received!");
+  Serial.println("Topic: " + topic);
+  Serial.println("Payload: " + payload);
+}
 
 void setup() {
-    Serial.begin(115200);
-    delay(2000);
-
-    while (status != WL_CONNECTED)
-    {
-        Serial.print("Attempting to connect to SSID: ");
-        Serial.println(WIFI_SSID);
-        // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-        status = WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-        // wait 5 seconds for connection:
-        delay(5000);
-    }
-
-    Serial.println("Connected to wifi");
-
-    if(hornbill.connect(HOST_ADDRESS,CLIENT_ID)== 0)
-    {
-        Serial.println("Connected to AWS");
-        delay(1000);
-
-        if(0==hornbill.subscribe(TOPIC_NAME,mySubCallBackHandler))
-        {
-            Serial.println("Subscribe Successfull");
-        }
-        else
-        {
-            Serial.println("Subscribe Failed, Check the Thing Name and Certificates");
-            while(1);
-        }
-    }
-    else
-    {
-        Serial.println("AWS connection failed, Check the HOST Address");
-        while(1);
-    }
-
-    delay(2000);
-
+  Serial.begin(115200);
+  t1 = millis();
+  connectAWS();
 }
 
 void loop() {
-
-    if(msgReceived == 1)
-    {
-        msgReceived = 0;
-        Serial.print("Received Message:");
-        Serial.println(rcvdPayload);
-    }
-    if(tick >= 5)   // publish to topic every 5seconds
-    {
-        tick=0;
-        sprintf(payload,"Hello from hornbill ESP32 : %d",msgCount++);
-        if(hornbill.publish(TOPIC_NAME,payload) == 0)
-        {        
-            Serial.print("Publish Message:");
-            Serial.println(payload);
-        }
-        else
-        {
-            Serial.println("Publish failed");
-        }
-    }  
-    vTaskDelay(1000 / portTICK_RATE_MS); 
-    tick++;
+  //publishMessage();
+  mqtt_client.loop();
+  delay(4000);
 }
