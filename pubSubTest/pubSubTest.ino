@@ -87,7 +87,7 @@ void setup() {
   t1 = millis();
   connectAWS();
 }
-
+w
 void loop() {
   //publishMessage();
   mqtt_client.loop();
