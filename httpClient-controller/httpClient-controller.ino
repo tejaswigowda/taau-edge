@@ -26,7 +26,7 @@ void setup() {
         delay(1000);
     }
 
-    wifiMulti.addAP("NETGEAR31", "fluffywind2904");
+    wifiMulti.addAP("asu-m", "12345678");
     mac_address = WiFi.macAddress();
 
 }
@@ -72,9 +72,25 @@ void setColors(String str_data)
 {
   
   int firstCommaIndex = str_data.indexOf(',');
-int secondCommaIndex = str_data.indexOf(',', firstCommaIndex+1);
-String cmd = str_data.substring(0, firstCommaIndex);
-String param1 = str_data.substring(firstCommaIndex+1, secondCommaIndex);
-String param2 = str_data.substring(secondCommaIndex+1);
-Serial.println(cmd + ", " + param1 + " ," + param2);
+  int secondCommaIndex = str_data.indexOf(',', firstCommaIndex+1);
+  String param0 = str_data.substring(0, firstCommaIndex);
+  String param1 = str_data.substring(firstCommaIndex+1, secondCommaIndex);
+  String param2 = str_data.substring(secondCommaIndex+1);
+
+  float value0 = param0.toFloat();
+  float value1 = param1.toFloat();
+  float value2 = param2.toFloat();
+
+    Serial.print(value0); 
+    Serial.print(" ");   
+    Serial.print(value1); 
+    Serial.print(" ");     
+    Serial.print(value2);
+    Serial.println();
+
+
+    // Now set colors here using value0, value1, value2.
+
+
+    
 }
