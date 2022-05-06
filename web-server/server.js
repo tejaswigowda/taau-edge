@@ -1,3 +1,12 @@
+var mac2Insta = {
+    "ab:cd:ef:gh:ij:kl": "insta1",
+    "ab:cd:ef:gh:ij:kl": "insta2",
+    "ab:cd:ef:gh:ij:kl": "insta3",
+    "ab:cd:ef:gh:ij:kl": "insta4",
+    "ab:cd:ef:gh:ij:kl": "insta5"
+}
+
+
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
@@ -17,6 +26,24 @@ app.get("/", function (req, res) {
 app.get("/getValue", function (req, res) {
   var id = req.query.mac;
   console.log(id);
+
+  switch(mac2Insta[id]){
+      case "insta1":
+        break;
+  
+      case "insta2":
+        break;
+  
+      case "insta3":
+        break;
+  
+      case "insta4":
+        break;
+  
+      case default:
+        break;
+  
+  }
 
   res.end(getRandomInt(100) + "," + getRandomInt(100) + "," + getRandomInt(100));
 
