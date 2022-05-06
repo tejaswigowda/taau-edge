@@ -27,6 +27,7 @@ app.get("/getValue", function (req, res) {
   var id = req.query.mac;
   console.log(id);
 
+  /*
   switch(mac2Insta[id]){
       case "insta1":
         break;
@@ -44,6 +45,7 @@ app.get("/getValue", function (req, res) {
         break;
   
   }
+  */
 
   res.end(getRandomInt(100) + "," + getRandomInt(100) + "," + getRandomInt(100));
 

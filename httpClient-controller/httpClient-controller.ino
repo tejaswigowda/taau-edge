@@ -54,7 +54,7 @@ void loop() {
             if(httpCode == HTTP_CODE_OK) {
                 String payload = http.getString();
                 USE_SERIAL.println(payload);
-                setColors((char *)payload.c_str());
+                setColors(payload.c_str());
                 
             }
         } else {
@@ -68,26 +68,13 @@ void loop() {
 }
 
 
-void setColors(char* msg)
+void setColors(String str_data)
 {
   
-  char *strings[6];
-  byte index = 0;
-  char *ptr = NULL;
-  ptr = strtok(msg, ',');  // delimiter
-  while (ptr != NULL)
-  {
-     strings[index] = ptr;
-     index++;
-     ptr = strtok(NULL, ',');
-  }
-  //Serial.println(index);
-  // print all the parts
-  Serial.println("The Pieces separated by strtok()");
-  for (int n = 0; n < index; n++)
-  {
-     Serial.print(n);
-     Serial.print("  ");
-     Serial.println(strings[n]);
-  }  
+  int firstCommaIndex = str_data.indexOf(',');
+int secondCommaIndex = str_data.indexOf(',', firstCommaIndex+1);
+String cmd = str_data.substring(0, firstCommaIndex);
+String param1 = str_data.substring(firstCommaIndex+1, secondCommaIndex);
+String param2 = str_data.substring(secondCommaIndex+1);
+Serial.println(cmd + ", " + param1 + " ," + param2);
 }
