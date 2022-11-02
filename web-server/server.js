@@ -1,12 +1,4 @@
-var mac2Insta = {
-    "ab:cd:ef:gh:ij:kl": "insta1",
-    "ab:cd:ef:gh:ij:kl": "insta2",
-    "ab:cd:ef:gh:ij:kl": "insta3",
-    "ab:cd:ef:gh:ij:kl": "insta4",
-    "ab:cd:ef:gh:ij:kl": "insta5"
-}
-
-
+var Client = require('node-rest-client').Client;
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
@@ -24,12 +16,19 @@ app.get("/", function (req, res) {
 });
 
 app.get("/getValue", function (req, res) {
-  var id = req.query.mac;
+  var id = req.query.location;
   console.log(id);
 
-  /*
-  switch(mac2Insta[id]){
-      case "insta1":
+  switch(id) {
+      case "phx":
+          client.get("http://remote.site/rest/xml/method", function (data, response) {
+	// parsed response body as js object
+	console.log(data);
+              var csv = data;
+        res.end(csv);
+	// raw response
+	console.log(response);
+});
         break;
   
       case "insta2":
@@ -42,12 +41,11 @@ app.get("/getValue", function (req, res) {
         break;
   
       case default:
+        res.end(getRandomInt(100) + "," + getRandomInt(100) + "," + getRandomInt(100));
         break;
   
   }
-  */
 
-  res.end(getRandomInt(100) + "," + getRandomInt(100) + "," + getRandomInt(100));
 
 });
 
