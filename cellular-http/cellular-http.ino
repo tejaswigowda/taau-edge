@@ -43,6 +43,7 @@ TinyGsm modem(SerialAT);
 
 
 // Server details
+const int  port = 80;
 const char server[] = "54.203.235.138";
 const char resource[] = "/getValue?location=phx";
 
@@ -53,7 +54,6 @@ const char gprsPass[] = ""; // Password
 const char simPIN[]   = ""; // SIM card PIN code, if any
 
 TinyGsmClient client(modem);
-const int  port = 1234;
 
 /*
 This is just to demonstrate how to use SPI device externally.
