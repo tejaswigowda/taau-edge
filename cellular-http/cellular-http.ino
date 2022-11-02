@@ -29,7 +29,6 @@
 #define TINY_GSM_RX_BUFFER      1024   // Set RX buffer to 1Kb
 
 #include <TinyGsmClient.h>
-String installAddress = "phx";
 
 #ifdef DUMP_AT_COMMANDS
 #include <StreamDebugger.h>
@@ -45,7 +44,7 @@ TinyGsm modem(SerialAT);
 
 // Server details
 const char server[] = "54.203.235.138:1234";
-const char resource[] = ("/getValue?mac=" + installAddress).c_str();
+const char resource[] = ("/getValue?location=phx"
 
 // Your GPRS credentials (leave empty, if missing)
 const char apn[]      = "h2g2"; // Your APN
