@@ -38,12 +38,10 @@ app.get("/", function (req, res) {
 
 app.get("/getValue", function (req, res) {
   var id = req.query.location;
-  console.log(id);
-
   switch (id) {
     case "phx":
       res.end(
-          phxDataObj.characteristics.pm2_5ConcMass.aqi.toString()
+          phxDataObj.characteristics.no2Conc.aqi + " " + phxDataObj.characteristics.pm2_5ConcMass.aqi
       );
       break;
 
