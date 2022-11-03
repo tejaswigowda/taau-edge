@@ -15,7 +15,8 @@ function updatePhxData() {
         "https://clarity-data-api.clarity.io/v1/measurements?aqi=pm2_5ConcMass,no2Conc&lat=33.4913623&lon=-111.9231936&limit=1",
           {"headers":{"x-api-key": "WsWbuQACdYp3aRjp3sAMtxy6HXCt9au5PZVXDI87"}},
         function (data, response) {
-          phxDataObj = JSON.parse(data)[0];
+ //           console.log(JSON.stringify(data), typeof data);
+          phxDataObj = data[0];
         }
       );
 }
@@ -42,7 +43,7 @@ app.get("/getValue", function (req, res) {
   switch (id) {
     case "phx":
       res.end(
-          phxDataObj.characteristics.pm2_5ConcMass.aqi
+          phxDataObj.characteristics.pm2_5ConcMass.aqi.toString()
       );
       break;
 
