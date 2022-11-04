@@ -22,7 +22,7 @@ function updatePhxData() {
 }
 
 
-setTimeout(function() {
+setInterval(function() {
     updatePhxData();
 }, 60*1000);
 
