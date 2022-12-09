@@ -39,7 +39,7 @@ function updateIdeaData() {
         "https://clarity-data-api.clarity.io/v1/measurements?aqi=pm2_5ConcMass,no2Conc&lat=33.416460&lon=-111.835910&limit=1",
           {"headers":{"x-api-key": "WsWbuQACdYp3aRjp3sAMtxy6HXCt9au5PZVXDI87"}},
         function (data, response) {
-          sagradoDataObj = data[0];
+          ideaDataObj = data[0];
         }
       );
 }
