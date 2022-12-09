@@ -10,13 +10,13 @@ var port = 1234;
 
 var phxDataObj = {};
 var sagradoDataObj = {};
+var ideaDataObj = {};
 
 function updatePhxData() {
       client.get(
         "https://clarity-data-api.clarity.io/v1/measurements?aqi=pm2_5ConcMass,no2Conc&lat=33.4913623&lon=-111.9231936&limit=1",
           {"headers":{"x-api-key": "WsWbuQACdYp3aRjp3sAMtxy6HXCt9au5PZVXDI87"}},
         function (data, response) {
- //           console.log(JSON.stringify(data), typeof data);
           phxDataObj = data[0];
         }
       );
@@ -28,7 +28,17 @@ function updateSGData() {
         "https://clarity-data-api.clarity.io/v1/measurements?aqi=pm2_5ConcMass,no2Conc&lat=33.3872158&lon=-112.0729866&limit=1",
           {"headers":{"x-api-key": "WsWbuQACdYp3aRjp3sAMtxy6HXCt9au5PZVXDI87"}},
         function (data, response) {
- //           console.log(JSON.stringify(data), typeof data);
+          sagradoDataObj = data[0];
+        }
+      );
+}
+
+
+function updateIdeaData() {
+      client.get(
+        "https://clarity-data-api.clarity.io/v1/measurements?aqi=pm2_5ConcMass,no2Conc&lat=33.416460&lon=-111.835910&limit=1",
+          {"headers":{"x-api-key": "WsWbuQACdYp3aRjp3sAMtxy6HXCt9au5PZVXDI87"}},
+        function (data, response) {
           sagradoDataObj = data[0];
         }
       );
@@ -38,10 +48,12 @@ function updateSGData() {
 setInterval(function() {
     updatePhxData();
     updateSGData();
+    updateIdeaData();
 }, 60*1000);
 
 updatePhxData();
 updateSGData();
+updateIdeaData();
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -62,11 +74,14 @@ app.get("/getValue", function (req, res) {
 
     case "sagrado":
       res.end(
-          sagradoDataObj.characteristics.no2Conc.aqi + " " + phxDataObj.characteristics.pm2_5ConcMass.aqi
+          sagradoDataObj.characteristics.no2Conc.aqi + " " + sagradoDataObj.characteristics.pm2_5ConcMass.aqi
       );
       break;
 
-    case "insta3":
+    case "idea":
+      res.end(
+          ideaDataObj.characteristics.no2Conc.aqi + " " + ideaDataObj.characteristics.pm2_5ConcMass.aqi
+      );
       break;
 
     case "insta4":
